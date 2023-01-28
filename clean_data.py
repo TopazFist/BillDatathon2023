@@ -52,12 +52,7 @@ for date in temp_date_df:
         month = date[1]
     # Construct new day
     if int(day) > 31:
-        day = str(randint(0,2)) + str(day[-1])
-    elif int(day) <= 0:
-        day = 1
-    # Check Month
-    if int(month) <=0:
-        month = 1
+        day = str(randint(1,2)) + str(day[-1])
     # Construct new date and add to users_data
     new_date = year + "-" + month + "-" + day
     date_series.append(new_date)
