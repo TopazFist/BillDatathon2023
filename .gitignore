@@ -1,2 +1,6 @@
 # Data
 data/
+
+#Caches
+__pycache__/
+.ipynb_checkpoints/
