@@ -91,7 +91,6 @@ def get_laven(value):
     #smallest = levan_user.nsmallest(20, columns=["levan_name","levan_price","levan_date"])
     result = pd.Series({"pot_doc": pot_doc,"pot_name": pot_name,"pot_price": pot_price
                 ,"pot_date": pot_date,"pot_address": pot_address})
-    print(result)
     return result
 
 if __name__ == "__main__":
