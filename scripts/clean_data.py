@@ -20,7 +20,9 @@ for filename in os.listdir(directory):
     continue
   ocr_temp = pd.read_csv(os.path.join(directory, filename), header=None, names=columns)
 
-  ocr_temp["Text_Main"] = ocr_temp["Text_Main"].fillna('').astype(str)+ocr_temp["Text2"].fillna('').astype(str)+ocr_temp["Text3"].fillna('').astype(str)+ocr_temp["Text4"].fillna('').astype(str)
+  ocr_temp["Text_Main"] = ocr_temp["Text_Main"].fillna('').astype(
+    str)+ocr_temp["Text2"].fillna('').astype(str)+ocr_temp["Text3"].fillna('').astype(
+    str)+ocr_temp["Text4"].fillna('').astype(str)
 
   ocr_temp["Text_Main"].replace("\'",'')
   ocr_temp["Text_Main"].replace("\"",'')
