@@ -78,10 +78,10 @@ def get_laven(value):
         levan_name = text_col.apply(lavenshtein, str2=value["vendor_name"]).min()
         levan_price = text_col.apply(lavenshtein, str2=str(value["amount"])).min()
         levan_date = text_col.apply(lavenshtein, str2=str(value["date"])).min()
-        levan_address = text_col.apply(lavenshtein, str2=value["vendor_address"][:20]).min()
+        levan_address = text_col.apply(lavenshtein, str2=value["vendor_address"][:30]).min()
         levan_user.loc[levan_user.shape[0]]=[filename[:-4],levan_name,levan_price,levan_date,levan_address]
 
-    pot = levan_user[levan_user['levan_name'] < 4]
+    pot = levan_user[(levan_user['levan_name'] < 5) | (levan_user['levan_address'] < 10)]
     pot_doc = pot['doc_id'].values.tolist()
     pot_name = pot['levan_name'].values.tolist()
     pot_price = pot['levan_price'].values.tolist()
@@ -91,7 +91,6 @@ def get_laven(value):
     #smallest = levan_user.nsmallest(20, columns=["levan_name","levan_price","levan_date"])
     result = pd.Series({"pot_doc": pot_doc,"pot_name": pot_name,"pot_price": pot_price
                 ,"pot_date": pot_date,"pot_address": pot_address})
-    print(result)
     return result
 
 if __name__ == "__main__":
