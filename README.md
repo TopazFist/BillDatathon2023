@@ -20,8 +20,7 @@ It was given to us by Bill.com for this specific competition.
 - To clean the data, run scripts/clean_data.py
 - Then, to add OCR data from receipts that did not have them given, run scripts/gen_ocr.py
 - To create the metrics csv file that is the precursor to generating our matchings, run scripts/create_metrics_dataframe.py
-- Then, to find the best parameters for converting these metrics to matchings, run scripts/optimal_matching.py
-  - The script will also run these parameters on the testing dataset and show the accuracy
+- Then, to find the best parameters for converting these metrics to matchings, run all the cells in lven_vname.ipynb and machine_learning.ipynb
   - The model's accuracy was around 84.2%
 
 ## Files

@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 import os
 from random import randint
-from modules.lavenshtein import lavenshtein
+from modules.lavenshtein import lavenshtein_cleaning
+#from Levenshtein import distance
 
 # Cleaning OCR Data
 
@@ -38,7 +39,7 @@ users_data = pd.concat([test_data, users_data], ignore_index=True)
 
 
 def laven_calc(cand_name, cand_lst, p_insert=1, p_delete=1, p_edit=1):
-    laven_score = lavenshtein(cand_lst.iloc[0], cand_name, p_insert=p_insert, p_delete=p_delete, p_edit=p_edit)
+    laven_score = lavenshtein_cleaning(cand_lst.iloc[0], cand_name, p_insert=p_insert, p_delete=p_delete, p_edit=p_edit)
     laven_score /= len(cand_name) # Normalize score based on string length
     return cand_lst[cand_lst == cand_name].index[0], laven_score
 
