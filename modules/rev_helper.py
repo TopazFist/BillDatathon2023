@@ -7,10 +7,12 @@ def lavenshtein(str1, str2):
     return distance(str1, str2)
 
 def partial_lavenshtein(str1, str2):
+    if len(str1) < 10:
+        return 0
     return fuzz.partial_ratio(str1, str2)
 
 def fuzz_lavenshtein(str1, str2):
-    return fuzz.partial_ratio(str1, str2)
+    return fuzz.ratio(str1, str2)
 
 def find_date(str1, str2):
     if len(str1) < 5:
@@ -29,7 +31,7 @@ def custom_lavenshtein(value, text_main):
     levan_name = text_main.apply(lavenshtein, str2=str(value["vendor_name"])).min()
     levan_date = text_main.apply(find_date, str2=str(value["date"])).max()
     levan_amount = text_main.apply(lavenshtein, str2=str(value["amount"])).min()
-    levan_address = text_main.apply(fuzz_lavenshtein, str2=str(value["vendor_address"])).max()
+    levan_address = text_main.apply(partial_lavenshtein, str2=str(value["vendor_address"][:30])).max()
     return pd.Series({"pot_doc": value["documentid"],"pot_name": (levan_name),"pot_price": levan_amount
                  ,"pot_date": levan_date,"pot_address": levan_address})
 
@@ -44,7 +46,7 @@ def rev_helper(zip):
     #     result = result[(result['pot_date'] == 1)]
     #     pot = result[(result['pot_name'] < 5) | (result['pot_address'] <80)]
     # else:
-    pot = result[(result['pot_name'] < 4) | (result['pot_address'] <90)]
+    pot = result[(result['pot_name'] < 5) | (result['pot_address'] > 80)]
     return [filename[:-4],pot["pot_doc"].tolist(),pot["pot_name"].tolist(), 
             pot["pot_price"].tolist(),pot["pot_date"].tolist(),
             pot["pot_address"].tolist()]
