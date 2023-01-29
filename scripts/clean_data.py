@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 import pandas as pd
 import numpy as np
 import os
@@ -6,7 +9,7 @@ from modules.lavenshtein import lavenshtein
 
 # Cleaning OCR Data
 
-directory = 'data/original/ocr/'
+directory = '../data/original/ocr/'
 columns = ["BB1", "BB2", "BB3", "BB4", "BB5", "BB6", "BB7", "BB8", "Text_Main", "Text2", "Text3","Text4"]
 for filename in os.listdir(directory):
   try:
@@ -22,11 +25,11 @@ for filename in os.listdir(directory):
   ocr_temp["Text_Main"].replace("\'",'')
   ocr_temp["Text_Main"].replace("\"",'')
   ocr_temp = ocr_temp.drop(labels=["Text2","Text3","Text4"], axis=1)
-  ocr_temp.to_csv(os.path.join('data/interim/ocr/', filename))
+  ocr_temp.to_csv(os.path.join('../data/interim/ocr/', filename))
 
 
 # Cleaning User Data
-users_data = pd.read_csv("data/original/Users.csv")
+users_data = pd.read_csv("../data/original/Users.csv")
 
 
 def laven_calc(cand_name, cand_lst, p_insert=1, p_delete=1, p_edit=1):
@@ -133,4 +136,4 @@ temp_amount_df.loc[temp_amount_df.isna()] = temp_amount_df.loc[users_data["vendo
 users_data["amount"] = temp_amount_df
 
 # Writing New User File
-users_data.to_csv("data/interim/Users.csv")
+users_data.to_csv("../data/interim/Users.csv")
