@@ -3,6 +3,9 @@ In this project, we are matching a set of reciepts to a set of users, each of
 whom has a vendor name, total cost, vendor address, and purchase date.
 
 ## Project Technical Summary
+wjoijfoqwjeoif
+wehfkqjwef
+qwkqeflkqwef
 
 ## Setup
 All data is in our Google Drive folder:
