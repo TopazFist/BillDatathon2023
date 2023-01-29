@@ -30,7 +30,6 @@ def read_reciept(filename) -> pd.DataFrame:
     img = cv2.GaussianBlur(img, (9,9), 1)
     img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 15)
     text = pts.image_to_data(img, output_type='data.frame', config="--psm 3")
-    tstr = pts.image_to_string(img)
     text = text[text['text'].notna()]
     rst = ""
     confs = []
@@ -42,7 +41,7 @@ def read_reciept(filename) -> pd.DataFrame:
         if int(row[1]['word_num']) == 1:
             if len(confs) > 0 and sum(confs)/len(confs) > 30:
                 conf_series.append(sum(confs)/len(confs))
-                lines.append(rst)
+                lines.append(rst.upper())
             elif len(confs) > 0 and sum(confs)/len(confs) < 30:
                 tops.pop()
                 lefts.pop()
@@ -62,7 +61,7 @@ def read_reciept(filename) -> pd.DataFrame:
         rst += row[1]['text']
         confs.append(float(row[1]['conf']))
     conf_series.append(sum(confs)/len(confs))
-    lines.append(rst)
+    lines.append(rst.upper())
     res = {"BB1":lefts, "BB2":tops, "BB3":rights, "BB4":tops, 
         "BB5":rights, "BB6":bottoms, "BB7":lefts, "BB8":bottoms, "Text_main":lines}
     res = pd.DataFrame(res)
