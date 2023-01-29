@@ -28,6 +28,13 @@ for filename in os.listdir(directory):
 # Cleaning User Data
 users_data = pd.read_csv("data/original/Users.csv")
 
+
+def laven_calc(cand_name, cand_lst, p_insert=1, p_delete=1, p_edit=1):
+    laven_score = lavenshtein(cand_lst.iloc[0], cand_name, p_insert=p_insert, p_delete=p_delete, p_edit=p_edit)
+    laven_score /= len(cand_name) # Normalize score based on string length
+    return cand_lst[cand_lst == cand_name].index[0], laven_score
+
+
 # Dates
 date_series = []
 temp_date_df = users_data["date"].copy()
@@ -62,38 +69,61 @@ users_data["date"] = pd.to_datetime(date_series)
 temp_vname_df = users_data["vendor_name"].copy() # Return List
 candidate_list = users_data["vendor_name"].copy() # Iteration List
 while len(candidate_list) > 0:
-    lavens = []
-    for cand_name in candidate_list: # Get score for each list element
-        laven_score = lavenshtein(candidate_list.iloc[0], cand_name, p_insert=0.5, p_delete=0.5, p_edit=1)
-        laven_score /= len(cand_name) # Normalize score based on string length
-        lavens.append(tuple([candidate_list[candidate_list == cand_name].index[0], laven_score]))
+    temp_cand_array = candidate_list.copy()
+    lavens = temp_cand_array.apply(laven_calc, cand_lst=temp_cand_array, p_insert=0.5, p_delete=0.5, p_edit=1)
     matches = list(filter(lambda x: x[1] < 0.4, lavens)) # Consider scores where less than 40% of word is edited
     matches = list(dict.fromkeys(matches)) # Remove weird duplicates
     replace_name = candidate_list.iloc[0] # Get name to replace matches with
-    remove_idx = []
-    for idx in matches:
-        remove_idx.append(idx[0])
-        temp_vname_df[idx[0]] = replace_name # Replace entries
+    remove_idx = list(map(lambda x: x[0], matches))
+    temp_vname_df.iloc[remove_idx,] = replace_name # Replace entries
     candidate_list = candidate_list.drop(remove_idx) # Remove matches from candidates
+    candidate_list = candidate_list[~candidate_list.isin([replace_name])] # Remove matches from candidates
 users_data["vendor_name"] = temp_vname_df
 
 # Cleaning Vendor Addresses
 temp_vadd_df = users_data["vendor_address"].copy() # Return List
 candidate_list = users_data["vendor_address"].copy() # Iteration List
 while len(candidate_list) > 0:
-    lavens = []
-    for cand_name in candidate_list: # Get score for each list element
-        laven_score = lavenshtein(candidate_list.iloc[0], cand_name, p_insert=0.5, p_delete=0.5, p_edit=1)
-        laven_score /= len(cand_name) # Normalize score based on string length
-        lavens.append(tuple([candidate_list[candidate_list == cand_name].index[0], laven_score]))
+    temp_cand_array = candidate_list.copy()
+    lavens = temp_cand_array.apply(laven_calc, cand_lst=temp_cand_array, p_insert=0.5, p_delete=0.5, p_edit=1)
     matches = list(filter(lambda x: x[1] < 0.1, lavens)) # Consider scores where less than 10% of str is different
     matches = list(dict.fromkeys(matches)) # Remove weird duplicates
     replace_name = candidate_list.iloc[0] # Get name to replace matches with
-    remove_idx = []
-    for idx in matches:
-        remove_idx.append(idx[0])
-        temp_vadd_df[idx[0]] = replace_name # Replace entries
+    remove_idx = list(map(lambda x: x[0], matches))
+    temp_vname_df.iloc[remove_idx,] = replace_name # Replace entries
     candidate_list = candidate_list.drop(remove_idx) # Remove matches from candidates
+    candidate_list = candidate_list[~candidate_list.isin([replace_name])] # Remove matches from candidates
+users_data["vendor_address"] = temp_vadd_df
+
+temp_vname_df = users_data["vendor_name"].copy() # Return List
+candidate_list = users_data["vendor_name"].copy() # Iteration List
+while len(candidate_list) > 0:
+    temp_cand_array = candidate_list.copy()
+    lavens = temp_cand_array.apply(laven_calc, cand_lst=temp_cand_array, p_insert=0.5, p_delete=0.5, p_edit=1)
+    matches = list(filter(lambda x: x[1] < 0.4, lavens)) # Consider scores where less than 40% of word is edited
+    matches = list(dict.fromkeys(matches)) # Remove weird duplicates
+    replace_name = candidate_list.iloc[0] # Get name to replace matches with
+    remove_idx = list(map(lambda x: x[0], matches))
+    temp_vname_df.iloc[remove_idx,] = replace_name # Replace entries
+    candidate_list = candidate_list.drop(remove_idx) # Remove matches from candidates
+    candidate_list = candidate_list[~candidate_list.isin([replace_name])] # Remove matches from candidates
+    print(len(candidate_list))
+users_data["vendor_name"] = temp_vname_df
+
+# Cleaning Vendor Addresses
+temp_vadd_df = users_data["vendor_address"].copy() # Return List
+candidate_list = users_data["vendor_address"].copy() # Iteration List
+while len(candidate_list) > 0:
+    temp_cand_array = candidate_list.copy()
+    lavens = temp_cand_array.apply(laven_calc, cand_lst=temp_cand_array, p_insert=0.5, p_delete=0.5, p_edit=1)
+    matches = list(filter(lambda x: x[1] < 0.1, lavens)) # Consider scores where less than 10% of str is different
+    matches = list(dict.fromkeys(matches)) # Remove weird duplicates
+    replace_name = candidate_list.iloc[0] # Get name to replace matches with
+    remove_idx = list(map(lambda x: x[0], matches))
+    temp_vname_df.iloc[remove_idx,] = replace_name # Replace entries
+    candidate_list = candidate_list.drop(remove_idx) # Remove matches from candidates
+    candidate_list = candidate_list[~candidate_list.isin([replace_name])] # Remove matches from candidates
+    print(len(candidate_list))
 users_data["vendor_address"] = temp_vadd_df
 
 # Cleaning Amounts
