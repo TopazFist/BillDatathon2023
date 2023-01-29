@@ -15,11 +15,27 @@ deletions, and edits differently
 Credit to GeeksForGeeks.org for this algorithm that I modified
 """
 
+def fuzz_ratio(str1, str2):
+    return fuzz.ratio(str1, str2)
+
 def partial_lavenshtein(str1, str2):
     return fuzz.partial_ratio(str1, str2)
 
 def lavenshtein(str1, str2):
     return distance(str1, str2)
+
+def find_date(str1, str2):
+    if len(str1) < 5:
+        return 0
+    str1 = str1.replace('/','-')
+    res = max(
+        fuzz.partial_ratio(str1, str2),
+        fuzz.partial_ratio(str1, str2[5:7]+'-'+str2[-2:]+'-'+str2[:4]),
+        fuzz.partial_ratio(str1, str2[-2:]+'-'+str2[5:7]+'-'+str2[:4]),
+        fuzz.partial_ratio(str1, str2[5:7]+'-'+str2[-2:]+'-'+str2[2:4]),
+        fuzz.partial_ratio(str1, str2[-2:]+'-'+str2[5:7]+'-'+str2[2:4]),
+    )
+    return int(res == 100)
 
 # def lavenshtein(str1, str2, p_insert=1, p_delete=1, p_edit=1):
 #     # Create a table to store results of subproblems
@@ -52,6 +68,10 @@ def lavenshtein(str1, str2):
 #                                    dp[i-1,j-1] + p_edit)    # Replace
  
 #     return int(dp[-1,-1])
+def force_dashes(s):
+    s = s.replace('/','-')
+    s = s.replace('|','-')
+    return s
 
 def get_laven(value):
     columns = ["BB1", "BB2", "BB3", "BB4", "BB5", "BB6", "BB7", "BB8", "Text_Main"]
@@ -84,11 +104,12 @@ def get_laven(value):
         ocr_temp = pd.read_csv(os.path.join(ocrdir, filename), header=None, names=columns)  
         text_col = ocr_temp["Text_Main"]
         levan_name = text_col.apply(lavenshtein, str2=value["vendor_name"]).min()
-        levan_price = text_col.apply(lavenshtein, str2=str(value["amount"])).min()
-        levan_date = text_col.apply(partial_lavenshtein, str2=str(value["date"])).max()
-        levan_address = text_col.apply(lavenshtein, str2=value["vendor_address"][:40]).min()
+        levan_price = text_col.apply(partial_lavenshtein, str2=str(value["amount"])).max()
+        text_col.apply(force_dashes)
+        levan_date = text_col.apply(find_date, str2=str(value["date"])[:10]).max()
+        levan_address = text_col.apply(fuzz_ratio, str2=value["vendor_address"][:30]).max()
         levan_user.loc[levan_user.shape[0]]=[filename[:-4],levan_name,levan_price,levan_date,levan_address]
-    pot = levan_user[(levan_user['levan_name'] < 5) | (levan_user['levan_address'] < 10)]
+    pot = levan_user[(levan_user['levan_name'] < 5) | (levan_user['levan_address'] > 80)]
     pot_doc = pot['doc_id'].values.tolist()
     pot_name = pot['levan_name'].values.tolist()
     pot_price = pot['levan_price'].values.tolist()
