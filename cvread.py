@@ -21,7 +21,8 @@ def cvread(filename):
         [data.append(float(c)) for c in list(text['conf'])]
     return data
 
-def read_reciept(dir, filename) -> pd.DataFrame:
+def read_reciept(filename) -> pd.DataFrame:
+    dir = "data/original/img"
     if dir[-1] != '/': dir = dir + '/'
     img = cv2.imread(dir + filename)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -69,7 +70,3 @@ def read_reciept(dir, filename) -> pd.DataFrame:
     res = pd.DataFrame(res)
     res.to_csv(f"data/interim/gen_ocr/{filename[:-4]}.csv")
     return res
-
-if __name__ == "__main__":
-    res = read_reciept("data/original/img", "00d0100894168.jpg")
-    print(res)
