@@ -31,7 +31,10 @@ for filename in os.listdir(directory):
 
 
 # Cleaning User Data
+
 users_data = pd.read_csv("../data/original/Users.csv")
+test_data = pd.read_csv("../data/original/test_transactions.csv")
+users_data = pd.concat([test_data, users_data], ignore_index=True)
 
 
 def laven_calc(cand_name, cand_lst, p_insert=1, p_delete=1, p_edit=1):
