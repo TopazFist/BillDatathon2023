@@ -33,9 +33,14 @@ def amount_lavenshtein(str1, str2):
     However, if the string is too short, it won't be a cash amount
     so we want to return 0, no similarity
     '''
-    if len(str2) < 3:
+    if len(str1) < 3:
         return 0
-    return fuzz.partial_ratio(str1, str2)
+    try:
+        if float(str1) == float(str2):
+            return 1
+    except:
+        return 0
+    else: return 0
 
 def find_date(str1, str2):
     '''
