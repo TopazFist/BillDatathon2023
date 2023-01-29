@@ -12,6 +12,7 @@ deletions, and edits differently
 
 Credit to GeeksForGeeks.org for this algorithm that I modified
 """
+
 def lavenshtein(str1, str2, p_insert=1, p_delete=1, p_edit=1):
     # Create a table to store results of subproblems
     dp = np.zeros((len(str1) + 1, len(str2) + 1))
