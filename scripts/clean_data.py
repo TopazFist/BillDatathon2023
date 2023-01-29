@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 import os
 from random import randint
-from modules.lavenshtein import lavenshtein
+from modules.lavenshtein import lavenshtein_cleaning
+#from Levenshtein import distance
 
 # Cleaning OCR Data
 
@@ -20,7 +21,9 @@ for filename in os.listdir(directory):
     continue
   ocr_temp = pd.read_csv(os.path.join(directory, filename), header=None, names=columns)
 
-  ocr_temp["Text_Main"] = ocr_temp["Text_Main"].fillna('').astype(str)+ocr_temp["Text2"].fillna('').astype(str)+ocr_temp["Text3"].fillna('').astype(str)+ocr_temp["Text4"].fillna('').astype(str)
+  ocr_temp["Text_Main"] = ocr_temp["Text_Main"].fillna('').astype(
+    str)+ocr_temp["Text2"].fillna('').astype(str)+ocr_temp["Text3"].fillna('').astype(
+    str)+ocr_temp["Text4"].fillna('').astype(str)
 
   ocr_temp["Text_Main"].replace("\'",'')
   ocr_temp["Text_Main"].replace("\"",'')
@@ -29,11 +32,14 @@ for filename in os.listdir(directory):
 
 
 # Cleaning User Data
+
 users_data = pd.read_csv("../data/original/Users.csv")
+test_data = pd.read_csv("../data/original/test_transactions.csv")
+users_data = pd.concat([test_data, users_data], ignore_index=True)
 
 
 def laven_calc(cand_name, cand_lst, p_insert=1, p_delete=1, p_edit=1):
-    laven_score = lavenshtein(cand_lst.iloc[0], cand_name, p_insert=p_insert, p_delete=p_delete, p_edit=p_edit)
+    laven_score = lavenshtein_cleaning(cand_lst.iloc[0], cand_name, p_insert=p_insert, p_delete=p_delete, p_edit=p_edit)
     laven_score /= len(cand_name) # Normalize score based on string length
     return cand_lst[cand_lst == cand_name].index[0], laven_score
 
